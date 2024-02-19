@@ -3,3 +3,5 @@ sub   1,2,3
 and   2,3,4
 rem   1,2,3
 jalr  1,2
+.text
+.data
