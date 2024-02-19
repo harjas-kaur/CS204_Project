@@ -1,5 +1,6 @@
 # CS204_Project
 Risc-v 32 bit assembler
+built on WSL2 (Ubuntu)
 # note to collaborators
 Add all the documentation for the project here, i.e. how to use etc.
 while making and pushing a commit, always give a comment with what you did.
@@ -20,3 +21,11 @@ hello, harjas this side.
 # glitches
 * for a command like *add x3,x4,x5,* it says there are no errors in the syntax, even if there is a stray comma.
     - fixed.
+# shortcut for pushing into git
+    after making all the changes in the clone of desktop run *bash git_push.sh*
+# running the syntax checker
+    command 1 (in the directory syntax_check where all the files are):
+        gcc main.c syntax_checker.c directive_checker.c -o syntax_checker 
+    command 2 
+        ./syntax_checker test.asm
+    
