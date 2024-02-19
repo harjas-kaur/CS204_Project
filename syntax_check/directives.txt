@@ -1,0 +1,7 @@
+text
+data
+byte
+half
+word
+dword
+asciz
