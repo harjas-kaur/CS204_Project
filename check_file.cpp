@@ -102,7 +102,7 @@ int check_for_stray_commas(FILE *file) {
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
         int len = strlen(line);
-        if (len > 1 && line[len - 1] == ',') { // Check if second last character is comma
+        if (len > 1 && line[len - 2] == ',') { // Check if second last character is comma
             printf("Syntax Error: Stray comma found at the end of line %d\n", line_number);
             error_count++;
         }
