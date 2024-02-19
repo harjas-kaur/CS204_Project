@@ -6,6 +6,7 @@
 
 //this function checks for any syntax errors in the given file.
 int check_syntax(FILE *file);
+int check_for_stray_commas(FILE *file);
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -43,6 +44,7 @@ int check_syntax(FILE *file) {
     int error_count = 0;
     //instructions.txt contains the supported instructions in this project.
     //on 19/02/23 no support for pseudo instructions
+    error_count += check_for_stray_commas(file);
     FILE *instructions_file = fopen("instructions.txt", "r");
     if (instructions_file == NULL) {
         printf("Error: Unable to open instructions file\n");
@@ -52,6 +54,7 @@ int check_syntax(FILE *file) {
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
         char *token = strtok(line, " ,\t\n");
+        
         if (token != NULL && token[0] != '#') { // to ignore comments and empty lines
             char instruction_name[MAX_LINE_LENGTH];
             strcpy(instruction_name, token);
@@ -91,4 +94,22 @@ int check_syntax(FILE *file) {
     fclose(instructions_file);
     return error_count;
 }
+int check_for_stray_commas(FILE *file) {
+    char line[MAX_LINE_LENGTH];
+    int line_number = 0;
+    int error_count = 0;
 
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        line_number++;
+        int len = strlen(line);
+        if (len > 1 && line[len - 1] == ',') { // Check if second last character is comma
+            printf("Syntax Error: Stray comma found at the end of line %d\n", line_number);
+            error_count++;
+        }
+        if (feof(file)) // Check for end of file
+            break;
+    }
+
+    rewind(file);
+    return error_count;
+}
