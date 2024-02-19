@@ -1,0 +1,1 @@
+write the assembler code for the data segment here
