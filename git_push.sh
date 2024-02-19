@@ -18,6 +18,13 @@ read -p "Do you want to sync changes in all files? (y/n): " sync_all
 
 # Check the user's response
 if [ "$sync_all" == "y" ]; then
+    # Ask for confirmation
+    read -p "Press 'y' to confirm and any other key to cancel: " confirm
+    if [ "$confirm" != "y" ]; then
+        echo "Operation canceled by the user"
+        exit 0
+    fi
+
     # Ask the user to enter the commit message
     read -p "Enter the commit message: " commit_message
 
