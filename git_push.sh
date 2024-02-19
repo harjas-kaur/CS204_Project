@@ -8,9 +8,7 @@ function sync_all_files() {
     git push origin main
 
     # Check if the push was successful
-    if [ $? -eq 0 ]; then
-        echo "Push successful"
-    else
+    if [ $? -ne 0 ]; then
         echo "Error: Push failed"
     fi
 }
@@ -40,9 +38,7 @@ else
         git push origin main
 
         # Check if the push was successful
-        if [ $? -eq 0 ]; then
-            echo "Push successful"
-        else
+        if [ $? -ne 0 ]; then
             echo "Error: Push failed"
         fi
     elif [ -f "$filename" ]; then
