@@ -42,35 +42,52 @@ int check_syntax(FILE *file) {
     int line_number = 0;
     int error_count = 0;
 
-    // Supported instructions
-    const char *supported_instructions[] = {
-        "add", "and", "or", "sll", "slt", "sra", "srl", "sub", "xor", "mul", "div", "rem",
-        "addi", "andi", "ori", "lb", "ld", "lh", "lw", "jalr",
-        "sb", "sw", "sd", "sh",
-        "beq", "bne", "bge", "blt",
-        "auipc", "lui",
-        "jal"
-    };
-
-    const int num_instructions = sizeof(supported_instructions) / sizeof(supported_instructions[0]);
+    FILE *instructions_file = fopen("instructions.txt", "r");
+    if (instructions_file == NULL) {
+        printf("Error: Unable to open instructions file\n");
+        return 1;
+    }
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
         char *token = strtok(line, " ,\t\n");
         if (token != NULL && token[0] != '#') { // Ignore comments and empty lines
-            int valid_instruction = 0;
-            for (int i = 0; i < num_instructions; i++) {
-                if (strcmp(token, supported_instructions[i]) == 0) {
-                    valid_instruction = 1;
+            char instruction_name[MAX_LINE_LENGTH];
+            strcpy(instruction_name, token);
+
+            // Find instruction in the instructions file
+            int found = 0;
+            char instr[MAX_LINE_LENGTH];
+            int expected_arguments;
+            while (fscanf(instructions_file, "%s %d", instr, &expected_arguments) != EOF) {
+                if (strcmp(instr, instruction_name) == 0) {
+                    found = 1;
                     break;
                 }
             }
-            if (!valid_instruction) {
-                printf("Syntax Error: Unsupported instruction on line %d\n", line_number);
+
+            // Reset file pointer to beginning for next iteration
+            rewind(instructions_file);
+
+            if (!found) {
+                printf("Syntax Error: Unsupported instruction '%s' on line %d\n", instruction_name, line_number);
                 error_count++;
+            } else {
+                // Check number of arguments
+                int argument_count = 0;
+                while (token != NULL) {
+                    token = strtok(NULL, " ,\t\n");
+                    argument_count++;
+                }
+                if (argument_count - 1 != expected_arguments) { // Subtract 1 for the instruction name
+                    printf("Syntax Error: Incorrect number of arguments for instruction '%s' on line %d\n", instruction_name, line_number);
+                    error_count++;
+                }
             }
         }
     }
 
+    fclose(instructions_file);
     return error_count;
 }
+
