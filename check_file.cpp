@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+//by harjas
 #define MAX_LINE_LENGTH 256
 
-// Function prototypes
+//this function checks for any syntax errors in the given file.
 int check_syntax(FILE *file);
 
 int main(int argc, char *argv[]) {
@@ -15,25 +15,25 @@ int main(int argc, char *argv[]) {
 
     char *filename = argv[1];
     char *extension = strrchr(filename, '.');
-
+    // we are checking if a .asm file has been passed into the program or not.
     if (extension == NULL || strcmp(extension, ".asm") != 0) {
         printf("Error: Not a .asm file.\n");
         return 1;
     }
-
+    //if unable to open file for various reasons
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error: Unable to open file %s\n", filename);
         return 1;
     }
-
+    //function description given below after main
     int syntax_result = check_syntax(file);
     fclose(file);
 
     if (syntax_result == 0) {
         printf("No syntax errors found in %s\n", filename);
     }
-
+    //returns syntax result, this will be chained to further codes which will execute only after this returns zero.
     return syntax_result;
 }
 
@@ -41,21 +41,22 @@ int check_syntax(FILE *file) {
     char line[MAX_LINE_LENGTH];
     int line_number = 0;
     int error_count = 0;
-
+    //instructions.txt contains the supported instructions in this project.
+    //on 19/02/23 no support for pseudo instructions
     FILE *instructions_file = fopen("instructions.txt", "r");
     if (instructions_file == NULL) {
         printf("Error: Unable to open instructions file\n");
         return 1;
     }
-
+    //opening the file under test; this will be given as an argument during compilation of the package
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
         char *token = strtok(line, " ,\t\n");
-        if (token != NULL && token[0] != '#') { // Ignore comments and empty lines
+        if (token != NULL && token[0] != '#') { // to ignore comments and empty lines
             char instruction_name[MAX_LINE_LENGTH];
             strcpy(instruction_name, token);
 
-            // Find instruction in the instructions file
+            // match the instruction with those in the instructions file
             int found = 0;
             char instr[MAX_LINE_LENGTH];
             int expected_arguments;
@@ -66,14 +67,14 @@ int check_syntax(FILE *file) {
                 }
             }
 
-            // Reset file pointer to beginning for next iteration
+            // reset file pointer 
             rewind(instructions_file);
 
             if (!found) {
                 printf("Syntax Error: Unsupported instruction '%s' on line %d\n", instruction_name, line_number);
                 error_count++;
             } else {
-                // Check number of arguments
+                // checking number of arguments
                 int argument_count = 0;
                 while (token != NULL) {
                     token = strtok(NULL, " ,\t\n");

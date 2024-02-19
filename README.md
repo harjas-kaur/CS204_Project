@@ -12,3 +12,7 @@ hello, harjas this side.
 2) test.asm is a test file used to check the working of the codes
 3) to compile the syntax checker, use commands gcc check_file.cpp -o check_file
 4) to run the code with test.asm, use command ./check_file test.asm
+
+# improvements
+* in the syntax checker, it does no check register or immediate operands for each instruction etc.
+    - may make another check...something file to check for these. leave it for now.
