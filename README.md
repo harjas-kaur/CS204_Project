@@ -14,6 +14,7 @@ hello, harjas this side.
 4) to run the code with test.asm, use command ./check_file test.asm
 
 # improvements
+* _IMPORTANT_ add support for assembler directives.
 * in the syntax checker, it does no check register or immediate operands for each instruction etc.
     - may make another check...something file to check for these. leave it for now.
 # glitches
