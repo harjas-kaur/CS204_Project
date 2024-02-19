@@ -16,3 +16,5 @@ hello, harjas this side.
 # improvements
 * in the syntax checker, it does no check register or immediate operands for each instruction etc.
     - may make another check...something file to check for these. leave it for now.
+# glitches
+for a command like *add x3,x4,x5,* it says there are no errors in the syntax, even if there is a stray comma.
