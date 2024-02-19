@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "syntax_checker.h"
-#include<string.h>
+#include "directive_checker.h"
+#include <string.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -22,11 +23,22 @@ int main(int argc, char *argv[]) {
     }
 
     int syntax_result = check_syntax(file);
+    fclose(file); // Close the file before reopening
+
+    file = fopen(filename, "r"); // Reopen the file
+    if (file == NULL) {
+        printf("Error: Unable to reopen file %s\n", filename);
+        return 1;
+    }
+
+    int directive_result = check_directives(file);
     fclose(file);
 
-    if (syntax_result == 0) {
+    if (syntax_result == 0 && directive_result == 0) {
         printf("No syntax errors found in %s\n", filename);
     }
 
-    return syntax_result;
+    return syntax_result + directive_result;
 }
+
+
