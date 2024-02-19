@@ -42,24 +42,41 @@ int check_syntax(FILE *file) {
     char line[MAX_LINE_LENGTH];
     int line_number = 0;
     int error_count = 0;
-    //instructions.txt contains the supported instructions in this project.
-    //on 19/02/23 no support for pseudo instructions
-    error_count += check_for_stray_commas(file);
+    int skip_until_text = 0; // Flag to indicate if we need to skip lines until .text directive
     FILE *instructions_file = fopen("instructions.txt", "r");
+
     if (instructions_file == NULL) {
         printf("Error: Unable to open instructions file\n");
         return 1;
     }
-    //opening the file under test; this will be given as an argument during compilation of the package
+
+    // Check for stray commas
+    error_count += check_for_stray_commas(file);
+
+    // Loop through the lines in the file
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
         char *token = strtok(line, " ,\t\n");
-        
-        if (token != NULL && token[0] != '#') { // to ignore comments and empty lines
+
+        if (token != NULL && token[0] != '#') {
+            // Check if we need to skip lines until .text directive
+            if (skip_until_text) {
+                if (strcmp(token, ".text") == 0) {
+                    skip_until_text = 0; // Stop skipping lines
+                }
+                continue; // Skip this line
+            }
+
+            // Check for .data directive
+            if (strcmp(token, ".data") == 0) {
+                skip_until_text = 1; // Set the flag to start skipping lines
+                continue; // Skip this line
+            }
+
             char instruction_name[MAX_LINE_LENGTH];
             strcpy(instruction_name, token);
 
-            // match the instruction with those in the instructions file
+            // Match the instruction with those in the instructions file
             int found = 0;
             char instr[MAX_LINE_LENGTH];
             int expected_arguments;
@@ -70,14 +87,14 @@ int check_syntax(FILE *file) {
                 }
             }
 
-            // reset file pointer 
+            // Reset file pointer 
             rewind(instructions_file);
 
             if (!found) {
                 printf("Syntax Error: Unsupported instruction '%s' on line %d\n", instruction_name, line_number);
                 error_count++;
             } else {
-                // checking number of arguments
+                // Checking number of arguments
                 int argument_count = 0;
                 while (token != NULL) {
                     token = strtok(NULL, " ,\t\n");
@@ -94,6 +111,7 @@ int check_syntax(FILE *file) {
     fclose(instructions_file);
     return error_count;
 }
+
 int check_for_stray_commas(FILE *file) {
     char line[MAX_LINE_LENGTH];
     int line_number = 0;
@@ -112,4 +130,16 @@ int check_for_stray_commas(FILE *file) {
 
     rewind(file);
     return error_count;
+}
+void skip_until_text_directive(FILE *file) {
+    char line[MAX_LINE_LENGTH];
+
+    // Loop through the lines until .text directive is found
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        char *token = strtok(line, " ,\t\n");
+        if (token != NULL && strcmp(token, ".text") == 0) {
+            // .text directive encountered, break the loop
+            break;
+        }
+    }
 }
