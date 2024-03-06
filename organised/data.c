@@ -11,13 +11,21 @@ void handle_ascii_string(char *line, unsigned int *address, FILE *output_file) {
         char *string_end = strchr(string_start, '"');
         if (string_end != NULL) {
             *string_end = '\0'; // Null-terminate the string
-            // Update address
-            *address += strlen(string_start); // Assuming each character in the string is one byte
-            // Print the address and string
-            fprintf(output_file, "0x%08X    %s\n", *address, string_start);
+            // Print each byte's hexadecimal value along with its address
+            for (char *ptr = string_start; ptr < string_end; ++ptr) {
+                fprintf(output_file, "0x%08X    0x%02X\n", *address, (unsigned char)*ptr);
+                (*address)++; // Move to the next address
+            }
         }
     }
 }
+
+// Structure to hold directive type and its size
+typedef struct {
+    char directive[MAX_LINE_LENGTH];
+    int size;
+} Directive;
+
 void compile_data_segment(FILE *input_file, FILE *output_file) {
     char line[MAX_LINE_LENGTH];
     int in_data_section = 0; // Flag to indicate if currently in the data section
@@ -42,34 +50,62 @@ void compile_data_segment(FILE *input_file, FILE *output_file) {
                 char directive_name[MAX_LINE_LENGTH];
                 sscanf(directive_start, ".%s", directive_name);
 
+                // Open the directives file for comparison
+                FILE *directives_file = fopen("directives.txt", "r");
+                if (directives_file == NULL) {
+                    printf("Error: Unable to open directives file\n");
+                    return;
+                }
+
+                // Find the directive in directives.txt
+                char current_directive[MAX_LINE_LENGTH];
+                int offset = 0;
+                while (fgets(current_directive, MAX_LINE_LENGTH, directives_file) != NULL) {
+                    // Remove newline character
+                    current_directive[strcspn(current_directive, "\n")] = '\0';
+
+                    // Extract the directive and offset
+                    char directive[MAX_LINE_LENGTH];
+                    if (sscanf(current_directive, "%s %d", directive, &offset) != 2) {
+                        printf("Error: Invalid directive format in directives.txt\n");
+                        fclose(directives_file);
+                        return;
+                    }
+
+                    // Check if the directive matches
+                    if (strcmp(directive, directive_name) == 0) {
+                        break;
+                    }
+                }
+
+                // Close the directives file
+                fclose(directives_file);
+
                 // Check if it's an array declaration
-                if (strcmp(directive_name, "word") == 0) {
+                if (strcmp(directive_name, "word") == 0 || strcmp(directive_name, "dword") == 0) {
                     // Extract the values of the array
                     char *values_start = strchr(line, '.');
                     if (values_start != NULL) {
-                        values_start += strlen("word"); // Move pointer to the values part
+                        values_start += strlen(directive_name); // Move pointer to the values part
                         char *token = strtok(values_start, ", \t\n"); // Tokenize based on comma, space, or tab
 
                         // Parse and print each value
                         while (token != NULL) {
-                            // Update address
-                            address += 4; // Assuming each value in the array is 4 bytes (32 bits)
+                            // Convert token to integer
+                            unsigned int data_value = (unsigned int)strtol(token, NULL, 0);
 
                             // Print the address and data in hexadecimal format
-                            fprintf(output_file, "0x%08X    0x%s\n", address, token); // Assuming data is in hex format
+                            fprintf(output_file, "0x%08X    0x%08X\n", address, data_value);
+
+                            // Update address based on the data type
+                            address += offset;
+
+                            // Get the next token
                             token = strtok(NULL, ", \t\n");
                         }
                     }
-                } else if (strcmp(directive_name, "asciiz") == 0) {
-                    // Jump to function to handle ASCII string
-                    // You can define another function to handle ASCII strings
-                    // and call it here passing necessary arguments
-                    // For simplicity, let's assume a function called handle_ascii_string
-                    handle_ascii_string(line, &address, output_file);
                 }
             }
         }
     }
 }
-
-

@@ -7,7 +7,6 @@
 // Function declarations for internal use
 
 static int check_for_stray_commas(FILE *file);
-static void skip_until_text_directive(FILE *file);
 
 
 static int is_valid_label(const char *label) {
@@ -123,16 +122,6 @@ static int check_for_stray_commas(FILE *file) {
     return error_count;
 }
 
-static void skip_until_text_directive(FILE *file) {
-    char line[MAX_LINE_LENGTH];
-
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-        char *token = strtok(line, " ,\t\n");
-        if (token != NULL && strcmp(token, ".text") == 0) {
-            break;
-        }
-    }
-}
 
 int check_directives(FILE *file) {
     char line[MAX_LINE_LENGTH];
