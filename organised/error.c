@@ -224,7 +224,7 @@ int check_directives(FILE *file) {
     rewind(file);
     return error_count;
 } 
-int check_errors(const char *filename) {
+ int check_errors(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error: Unable to open file %s\n", filename);
@@ -242,12 +242,14 @@ int check_errors(const char *filename) {
 
     int directive_result = check_directives(file);
     fclose(file);
-
     if (syntax_result == 0 && directive_result == 0) {
         printf("No syntax errors found in %s\n", filename);
+        return 0;
+    } else{
+        return syntax_result + directive_result;
     }
 
-    return syntax_result + directive_result;
+   
 }
 
 
