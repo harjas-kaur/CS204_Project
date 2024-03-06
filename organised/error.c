@@ -142,17 +142,19 @@ int check_directives(FILE *file) {
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
 
-        // Skip empty lines
-        if (strlen(line) == 0 || line[0] == '\n')
-            continue;
-
-        // Skip lines starting with comments
-        if (line[0] == '#')
+        // Skip empty lines and lines starting with comments
+        if (strlen(line) == 0 || line[0] == '\n' || line[0] == '#')
             continue;
 
         // Check if the line contains a label followed by a directive
         char *label_end = strchr(line, ':');
         char *directive_start = strchr(line, '.');
+
+        // Skip lines containing an integer separated by a tab
+        char *tab_position = strchr(line, '\t');
+        if (tab_position != NULL && tab_position > directive_start) {
+            continue;
+        }
 
         if (label_end != NULL && directive_start != NULL && directive_start > label_end) {
             // Extract the directive name
@@ -173,39 +175,11 @@ int check_directives(FILE *file) {
                 // Remove newline character
                 current_directive[strcspn(current_directive, "\n")] = 0;
 
-                if (strcmp(current_directive, directive_name) == 0) {
-                    found = 1;
-                    break;
-                }
-            }
+                // Extract directive name from the line in directives.txt
+                char current_directive_name[MAX_LINE_LENGTH];
+                sscanf(current_directive, "%s", current_directive_name);
 
-            // Close the directives file
-            fclose(directives_file);
-
-            if (!found) {
-                printf("Syntax Error: Unsupported directive '%s' on line %d\n", directive_name, line_number);
-                error_count++;
-            }
-        } else if (directive_start != NULL) {
-            // Extract the directive name
-            char directive_name[MAX_LINE_LENGTH];
-            sscanf(directive_start, ".%s", directive_name);
-
-            // Open the directives file for comparison
-            FILE *directives_file = fopen("directives.txt", "r");
-            if (directives_file == NULL) {
-                printf("Error: Unable to open directives file\n");
-                return 1;
-            }
-
-            // Check if the directive exists in directives.txt
-            char current_directive[MAX_LINE_LENGTH];
-            int found = 0;
-            while (fgets(current_directive, MAX_LINE_LENGTH, directives_file) != NULL) {
-                // Remove newline character
-                current_directive[strcspn(current_directive, "\n")] = 0;
-
-                if (strcmp(current_directive, directive_name) == 0) {
+                if (strcmp(current_directive_name, directive_name) == 0) {
                     found = 1;
                     break;
                 }
@@ -220,10 +194,9 @@ int check_directives(FILE *file) {
             }
         }
     }
-
-    rewind(file);
     return error_count;
-} 
+}
+
  int check_errors(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {

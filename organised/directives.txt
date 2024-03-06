@@ -1,7 +1,7 @@
-text
-data
-byte
-half
-word
-dword
-asciz
+text    0
+data    0
+byte    1
+half    2
+word    4
+dword   8
+asciz   1
