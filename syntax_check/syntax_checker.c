@@ -1,7 +1,27 @@
 #include "syntax_checker.h"
+#include <ctype.h>
 #include <string.h>
 
+// Function declarations for internal use
+static int check_for_stray_commas(FILE *file);
+static void skip_until_text_directive(FILE *file);
+
 #define MAX_LINE_LENGTH 256
+
+static int is_valid_label(const char *label) {
+    // Check if the label is a valid RISC-V label
+    if (!isalpha(label[0])) {
+        return 0; // Labels must start with a letter
+    }
+
+    for (size_t i = 1; label[i] != '\0'; i++) {
+        if (!isalnum(label[i]) && label[i] != '_') {
+            return 0; // Labels may contain letters, digits, and underscores
+        }
+    }
+
+    return 1;
+}
 
 int check_syntax(FILE *file) {
     char line[MAX_LINE_LENGTH];
@@ -32,6 +52,17 @@ int check_syntax(FILE *file) {
             if (strcmp(token, ".data") == 0) {
                 skip_until_text = 1;
                 continue;
+            }
+
+            // Check if the token is a label
+            if (token[strlen(token) - 1] == ':') {
+                // Remove the colon from the label
+                token[strlen(token) - 1] = '\0';
+                if (!is_valid_label(token)) {
+                    printf("Syntax Error: Invalid label '%s' on line %d\n", token, line_number);
+                    error_count++;
+                }
+                continue; // Ignore labels
             }
 
             char instruction_name[MAX_LINE_LENGTH];
@@ -70,7 +101,7 @@ int check_syntax(FILE *file) {
     return error_count;
 }
 
-int check_for_stray_commas(FILE *file) {
+static int check_for_stray_commas(FILE *file) {
     char line[MAX_LINE_LENGTH];
     int line_number = 0;
     int error_count = 0;
@@ -90,7 +121,7 @@ int check_for_stray_commas(FILE *file) {
     return error_count;
 }
 
-void skip_until_text_directive(FILE *file) {
+static void skip_until_text_directive(FILE *file) {
     char line[MAX_LINE_LENGTH];
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
