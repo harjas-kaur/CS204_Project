@@ -5,7 +5,7 @@ function sync_all_files() {
     # Execute git commands for all files
     git add .
     git commit -m "$commit_message"
-    git push origin main -f
+    git push origin main 
 
     # Check if the push was successful
     if [ $? -ne 0 ]; then
