@@ -33,6 +33,8 @@ void assemble_data_segment(){
 }
 
 void assemble_text_segment() {
+    int program_counter=0;
+    int *program_counter_ptr = &program_counter;
     FILE *input_file = fopen("test.asm", "r");
     if (input_file == NULL) {
         printf("Error: Unable to open input file\n");
@@ -40,7 +42,7 @@ void assemble_text_segment() {
     }
 
     char line[MAX_LINE_LENGTH];
-
+    char line_copy[MAX_LINE_LENGTH];
     // Iterate through each line in the input file
     while (fgets(line, MAX_LINE_LENGTH, input_file) != NULL) {
         // Skip empty lines and comments
@@ -49,15 +51,15 @@ void assemble_text_segment() {
         }
 
         printf("Processing line: %s\n", line);
-
+        strcpy(line_copy, line);
         // Tokenize the line to get the instruction mnemonic
         char *instruction_mnemonic = strtok(line, " \t\n");
         if (instruction_mnemonic == NULL) {
             printf("Error: Unable to parse instruction mnemonic\n");
             continue;
         }
-        printf("Instruction mnemonic after tokenization: %s\n", instruction_mnemonic);
-
+        //printf("Instruction mnemonic after tokenization: %s\n", instruction_mnemonic);
+        
         // Read instruction details from instructions.txt
         FILE *instructions_file = fopen("instructions.txt", "r");
         if (instructions_file == NULL) {
@@ -66,7 +68,7 @@ void assemble_text_segment() {
             fclose(input_file);
             return;
         }
-
+        
         char instr_line[MAX_LINE_LENGTH];
         while (fgets(instr_line, sizeof(instr_line), instructions_file) != NULL) {
             //printf("Inside the while loop\n");
@@ -76,17 +78,40 @@ void assemble_text_segment() {
             if (sscanf(instr_line, "%s %s", instr_type, instr_mnemonic) != 2) {
                 continue;
             }
+            
             //printf("Instruction read from instructions.txt: %s %s\n", instr_mnemonic, instr_type);
             if (strcmp(instr_mnemonic, instruction_mnemonic) == 0) {
-                // Found matching instruction type
-                // Print the type
-                printf("Assembling instruction of type %s\n", instr_type);
-                break;
+                // Call the appropriate assembly function based on the instruction type
+                if (strcmp(instr_type, "R") == 0) {
+                    printf("Assembling R-type instruction\n");
+                    assemble_r_type(line_copy, program_counter_ptr);
+                    // Call the function to assemble R-type instruction
+                } else if (strcmp(instr_type, "I") == 0) {
+                    printf("Assembling I-type instruction\n");
+                    assemble_i_type(line_copy, program_counter_ptr);
+                    // Call the function to assemble I-type instruction
+                } else if (strcmp(instr_type, "S") == 0) {
+                    printf("Assembling S-type instruction\n");
+                    // Call the function to assemble S-type instruction
+                    assemble_s_type(line_copy, program_counter_ptr);
+                } else if (strcmp(instr_type, "SB") == 0) {
+                    printf("Assembling SB-type instruction\n");
+                    // Call the function to assemble SB-type instruction
+                } else if (strcmp(instr_type, "U") == 0) {
+                    printf("Assembling U-type instruction\n");
+                    // Call the function to assemble U-type instruction
+                    assemble_u_type(line_copy, program_counter_ptr);
+                } else if (strcmp(instr_type, "UJ") == 0) {
+                    printf("Assembling UJ-type instruction\n");
+                    // Call the function to assemble UJ-type instruction
+                } else {
+                    printf("Error: Unknown instruction type '%s'\n", instr_type);
+                }
             }
         }
 
         if (feof(instructions_file)) {
-            printf("End of instructions file reached\n");
+            //printf("End of instructions file reached\n");
         } else if (ferror(instructions_file)) {
             printf("Error reading instructions file\n");
         }
@@ -115,9 +140,9 @@ int main(int argc, char *argv[]) {
         return 0;
     } else{
         assemble_data_segment();
-        printf("Debug 1\n");
+        //printf("Debug 1\n");
         assemble_text_segment();
-        printf("Debug 2\n");
+        //printf("Debug 2\n");
         return 0;
     }
     

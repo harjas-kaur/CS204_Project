@@ -1,2 +1,2 @@
-add   x3,x4,x5
-addi  x2,x4,x5
+auipc x3,0
+
