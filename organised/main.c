@@ -5,7 +5,7 @@
 //for testing gcc -o syntax_checker main.c error.c text.c data.c -std=c99 -Wall -Wextra
 //can run compiled like ./syntax_checker test.asm
 //issues arise when compiling on wsl. reopen the terminal. it will reflect changes.
-
+//beq and jal do not give out correct machine code compared to venus.
 void skip_labels(char *line_copy) {
     // find the position of the colon in the line
     char *colon_pos = strchr(line_copy, ':');
@@ -81,7 +81,7 @@ void assemble_text_segment() {
                     assemble_s_type(line_copy, program_counter_ptr);
                 } else if (strcmp(instr_type, "SB") == 0) {
                     //printf("Assembling SB-type instruction\n");
-                     assemble_uj_type(line_copy, program_counter_ptr);
+                     assemble_sb_type(line_copy, program_counter_ptr);
                 } else if (strcmp(instr_type, "U") == 0) {
                     //printf("Assembling U-type instruction\n");
                     assemble_u_type(line_copy, program_counter_ptr);

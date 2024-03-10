@@ -261,7 +261,7 @@ void assemble_s_type(char *line, int *program_counter) {
             continue;
         }
         if (strcmp(instr_keyword, instruction_keyword) == 0) {
-            printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
+            //printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
             break;
         }
     }
@@ -348,7 +348,7 @@ void assemble_u_type(char *line, int *program_counter) {
             continue;
         }
         if (strcmp(instr_keyword, instruction_keyword) == 0) {
-            printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
+            //printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
             break;
         }
     }
@@ -379,7 +379,7 @@ void assemble_u_type(char *line, int *program_counter) {
         printf("error: Unable to open output FILE\n");
         return;
     }
-    fprintf(output_FILE, "%s %s\n", pc_hex, hex_machine_code);
+    fprintf(output_FILE, "%s 0x%s\n", pc_hex, hex_machine_code);
 
     
     *program_counter += 4;
@@ -393,10 +393,14 @@ void assemble_uj_type(char *line, int *program_counter) {
     
     const char opcode[] = "1101111"; // opcode 
 
-   
-    char *rd_str = strtok(line, " \t\n");  
-    char *immediate_value_str = strtok(NULL, " \t\n"); 
-
+    //printf("%s\n",line);
+    
+     
+    char *immediate_value_str_1 = strtok(line, " ");
+    char *rd_str = strtok(NULL, " ");  
+    //printf("%s\n", immediate_value_str_1); //this was just to make the immediate_value_str move forward
+    char *immediate_value_str = strtok(NULL, " "); 
+    //printf("%s\n", immediate_value_str);
     
     if (rd_str == NULL || immediate_value_str == NULL) {
         printf("error: Missing operand\n");
@@ -411,23 +415,29 @@ void assemble_uj_type(char *line, int *program_counter) {
     int immediate_value = atoi(immediate_value_str);
 
     // calculate offset -20 bits
-    int offset = immediate_value - (*program_counter + 4); // subtract current pc add 4 for pc+4
-
+    int offset = immediate_value - (*program_counter); // subtract current pc add 4 for pc+4
+    //printf("%d %d %d\n", offset, immediate_value, *program_counter);
     // check range
     if (offset < -(1 << 20) || offset >= (1 << 20)) {
         printf("error: immediate value out of range\n");
         return;
     }
 
-    // extract 20-bit immediate from offset
-    int immediate_bits = (offset >> 1) & 0xFFFFF;
-    char* immediate_binary = int_to_binary(immediate_bits, 20);
+    // Extract the bits and rearrange them
+    int bit_20 = (offset >> 20) & 0x1; // Bit 20
+    int bits_10_to_1 = (offset >> 1) & 0x3FF; // Bits 10 to 1
+    int bit_11 = (offset >> 11) & 0x1; // Bit 11
+    int bits_19_to_12 = (offset >> 12) & 0xFF; // Bits 19 to 12
+    char immediate_binary[21]; // Assuming 21 bits + null terminator
+    snprintf(immediate_binary, 21, "%b%010b%b%08b", bit_20, bits_10_to_1, bit_11, bits_19_to_12);
+    printf("%s\n", immediate_binary);
+    //printf("%s\n", rd);
     
     char *rd_binary = decimal_to_binary(rd);
-    
+    printf("%s\n", rd_binary);
     char machine_code[33]; 
     sprintf(machine_code, "%s%s%s", immediate_binary,rd_binary, opcode);
-    //printf("%s", machine_code);
+    printf("%s\n", machine_code);
     
     char hex_machine_code[9]; 
     sprintf(hex_machine_code, "%X", (int) strtol(machine_code, NULL, 2));
@@ -476,22 +486,21 @@ void assemble_sb_type(char *line, int *program_counter) {
     int immediate_value = atoi(immediate_value_str);
 
     // calculate offset 
-    int offset = immediate_value - (*program_counter + 4); // Subtract current pC add 4 for pC+4
-
+    int offset = immediate_value - (*program_counter); // Subtract current pC add 4 for pC+4
+   // printf("%d", offset);
     if (offset < -(1 << 11) || offset >= (1 << 11)) {
         printf("error: Immediate value out of range\n");
         return;
     }
+    
+    // Extract 7-bit immediate value from offset
+    int immediate_bits = ((offset >> 12) & 0x1) | ((offset >> 5) & 0x7E);
 
-    // extract 12-bit immediate value from offset
-    int immediate_bits = (offset >> 1) & 0xFFF;
-
-    // extract bits 1-4 11 store in rd
-    int rd_bits = ((offset >> 11) & 0x1) | ((offset >> 4) & 0xF);
+    // extract bits 4-1 and bit 11, and store in rd
+    int rd_bits = ((offset >> 11) & 0x1) | (((offset >> 1) & 0xF) << 1);
 
    // printf("Immediate bits: %d\n", immediate_bits);
     //printf("RD bits: %d\n", rd_bits);
-
     
     FILE *instructions_FILE = fopen("instructions.txt", "r");
     if (instructions_FILE == NULL) {
@@ -516,28 +525,23 @@ void assemble_sb_type(char *line, int *program_counter) {
     fclose(instructions_FILE);
 
     
-    char immediate_binary[13]; 
-    sprintf(immediate_binary, "%012d", immediate_bits);
+    char immediate_binary[8]; 
+    sprintf(immediate_binary, "%07b", immediate_bits);
 
     
-    char rd_binary[5]; 
-    sprintf(rd_binary, "%04d", rd_bits);
+    char rd_binary[6]; 
+    sprintf(rd_binary, "%05b", rd_bits);
 
     
     char *rs2_binary = decimal_to_binary(rs2);
     char *rs1_binary = decimal_to_binary(rs1);
 
-    
+    //printf(" rd (binary): %s\n", rd_binary);
+    //printf(" fun3 (binary): %s\n", funct3);
     char machine_code[33]; 
-    sprintf(machine_code, "%s%s%s%s%s", immediate_binary, rs2_binary, rs1_binary, opcode, funct3);
+    sprintf(machine_code, "%s%s%s%s%s%s", immediate_binary, rs2_binary, rs1_binary, funct3, rd_binary, opcode);
 
-    // rd bits into mc at correct position
-    machine_code[7] = rd_binary[0];
-    machine_code[8] = rd_binary[1];
-    machine_code[9] = rd_binary[2];
-    machine_code[10] = rd_binary[3];
-
-    printf("Machine code (binary): %s\n", machine_code);
+    //printf("Machine code (binary): %s\n", machine_code);
 
     
     char hex_machine_code[9]; 
@@ -554,10 +558,8 @@ void assemble_sb_type(char *line, int *program_counter) {
         return;
     }
     fprintf(output_FILE, "%s 0x%s\n", pc_hex, hex_machine_code);
-
     
     *program_counter += 4;
-
-    
+   
     fclose(output_FILE);
 }
