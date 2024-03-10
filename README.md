@@ -13,7 +13,7 @@ note that wsl in vscode terminal gives some glitches occasionally, use normal ub
     1. Clone from GitHub.
     2. Open a terminal in the "organized" directory.
     3. Execute the compilation script by entering the following command:
-            _bash compile.sh_
+            `bash compile.sh`
     4. The file to be assembled is `test.asm`.
     5. The output will be reflected in `output.mc`.
 # Description
@@ -31,16 +31,16 @@ note that wsl in vscode terminal gives some glitches occasionally, use normal ub
     
 # Explanations
 * .txt files
-    _directives.txt_:contains the list of supported directives for data along with the spapce occupied by each element of that type.
-    _instructions.txt_: contains the list of supported instructions along with type, opcode, funct3 func7 etc.
+    `_directives.txt_`:contains the list of supported directives for data along with the spapce occupied by each element of that type.
+    `_instructions.txt_:` contains the list of supported instructions along with type, opcode, funct3 func7 etc.
 * .h files
-    _error.h_ and _riscv_compiler.h_ link the files together.
+    `_error.h_` and `_riscv_compiler.h_` link the files together.
 * .c files
-    *error.c* primarily chekcs for syntax errors in the given test.asm file. However it does not highlight if register operands are gven wring in themselves.
-    *data.c* primarity deals with the assembly of the data segment of the code and stores the data in appropriate memory locations
-    *labels.c* is a bit of a multitasker. it calls in functions from error.c and data.c, creates label vs pc address table and then removes the text segment as the meaningful information has already been extracted. Then it removes the label names and in the SB instructions replaces the label names with the pc address.
-    *text.c* has all the functions for assembling instructions, sorted by their types.
-    *main.c* calls in functions from data.c and others to finally assemble the text segment of the code.
+    `*error.c*` primarily chekcs for syntax errors in the given test.asm file. However it does not highlight if register operands are gven wring in themselves.
+    `*data.c*` primarity deals with the assembly of the data segment of the code and stores the data in appropriate memory locations
+    `*labels.c*` is a bit of a multitasker. it calls in functions from error.c and data.c, creates label vs pc address table and then removes the text segment as the meaningful information has already been extracted. Then it removes the label names and in the SB instructions replaces the label names with the pc address.
+    `*text.c*` has all the functions for assembling instructions, sorted by their types.
+    `*main.c*` calls in functions from data.c and others to finally assemble the text segment of the code.
 # shortcut for pushing into git
     after making all the changes in the clone of desktop run *bash git_push.sh*
 # shortcomings
