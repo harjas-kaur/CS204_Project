@@ -4,4 +4,4 @@ byte    1
 half    2
 word    4
 dword   8
-asciiz   1
+asciz   1

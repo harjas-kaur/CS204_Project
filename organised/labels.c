@@ -46,7 +46,7 @@ void handle_labels(char *input_file_name) {
             }
 
             // Print the instruction for debugging
-            printf("Instruction: %s\n", instruction_start);
+            //printf("Instruction: %s\n", instruction_start);
 
             // Increment the program counter for the instruction part
             program_counter += 4;
@@ -112,6 +112,7 @@ void replace_labels(char *input_file_name) {
         printf("Error: Unable to open input file\n");
         return;
     }
+    
 
     char line[MAX_LINE_LENGTH];
     FILE *temp_file = fopen("temp.asm", "w");
@@ -120,13 +121,19 @@ void replace_labels(char *input_file_name) {
         fclose(input_file);
         return;
     }
+    
 
     // Iterate through each line in the input file
     while (fgets(line, MAX_LINE_LENGTH, input_file) != NULL) {
+        
         // Tokenize the line to get the instruction and its arguments
         char *instruction = strtok(line, " \t\n");
+        if (instruction == NULL) {
+            //printf("Error: Failed to tokenize instruction\n");
+            continue;
+        }
         fprintf(temp_file, "%s", instruction); // Write the instruction to the temporary file
-
+        
         // Process the arguments of the instruction
         char *arguments = strtok(NULL, "\n"); // Get the rest of the line as arguments
         if (arguments != NULL) {
@@ -143,9 +150,10 @@ void replace_labels(char *input_file_name) {
                             strcmp(instruction, "jal") == 0) {
                             fprintf(temp_file, " %d", labelTable[i].address);
                             label_found = 1;
-                            printf("Label replaced: %d\n", labelTable[i].address);
+                            
                         } else {
                             fprintf(temp_file, " %s", arg); // Keep the label as is for other instructions
+                            
                         }
                         break;
                     }
@@ -153,12 +161,13 @@ void replace_labels(char *input_file_name) {
                 // If the argument is not a label, write it as is
                 if (!label_found) {
                     fprintf(temp_file, " %s", arg);
-                    printf("Argument not replaced: %s\n", arg);
+                    
                 }
                 arg = strtok(NULL, ",");
             }
         }
         fputs("\n", temp_file); // Write newline character after each line
+        
     }
 
     fclose(input_file);
@@ -168,6 +177,7 @@ void replace_labels(char *input_file_name) {
     remove(input_file_name);
     rename("temp.asm", input_file_name);
 }
+
 void delete_data_segment(const char *filename) {
     // Open the file for reading and writing
     FILE *file = fopen(filename, "r+");
@@ -274,4 +284,3 @@ int main() {
 
     return 0;
 }
-

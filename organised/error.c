@@ -4,12 +4,7 @@
 #include<stdio.h>
 #define MAX_LINE_LENGTH 256
 
-// Function declarations for internal use
-
 static int check_for_stray_commas(FILE *file);
-
-
-
 
 int check_syntax(FILE *file) {
     char line[MAX_LINE_LENGTH];
@@ -42,12 +37,11 @@ int check_syntax(FILE *file) {
                 continue;
             }
 
-            // Check if the token is a label
+            // check label
             if (token[strlen(token) - 1] == ':') {
-                // Remove the colon from the label
                 token[strlen(token) - 1] = '\0';
                 
-                continue; // Ignore labels
+                continue; // ignore label
             }
 
             char instruction_name[MAX_LINE_LENGTH];
@@ -115,11 +109,11 @@ int check_directives(FILE *file) {
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         line_number++;
 
-        // Skip empty lines and lines starting with comments
+        // empty lines 
         if (strlen(line) == 0 || line[0] == '\n' || line[0] == '#')
             continue;
 
-        // Check if the line contains a label followed by a directive
+        // check if label and directive 
         char *label_end = strchr(line, ':');
         char *directive_start = strchr(line, '.');
 
@@ -141,7 +135,7 @@ int check_directives(FILE *file) {
                 return 1;
             }
 
-            // Check if the directive exists in directives.txt
+            // check if the directive exists in directives.txt
             char current_directive[MAX_LINE_LENGTH];
             int found = 0;
             while (fgets(current_directive, MAX_LINE_LENGTH, directives_file) != NULL) {
@@ -158,7 +152,7 @@ int check_directives(FILE *file) {
                 }
             }
 
-            // Close the directives file
+            // close the directives file
             fclose(directives_file);
 
             if (!found) {
