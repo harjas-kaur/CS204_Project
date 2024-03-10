@@ -2,9 +2,9 @@
 Risc-v assembler
 built on WSL2 (Ubuntu)
 # collaborators
-**Harjas Kaur
-Manas Deorah
-Ragini Gupta**
+**Harjas Kaur**
+**Manas Deorah**
+**Ragini Gupta**
 
 # note to users
 ---write the use documentation here for evaluation.
