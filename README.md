@@ -42,8 +42,7 @@ built on WSL2 (Ubuntu)
     `*labels.c*` is a bit of a multitasker. it calls in functions from error.c and data.c, creates label vs pc address table and then removes the text segment as the meaningful information has already been extracted. Then it removes the label names and in the SB instructions replaces the label names with the pc address.
     `*text.c*` has all the functions for assembling instructions, sorted by their types.
     `*main.c*` calls in functions from data.c and others to finally assemble the text segment of the code.
-# shortcut for pushing into git
-    after making all the changes in the clone of desktop run *bash git_push.sh*
+
 # shortcomings
 * syntax checking can be improved.
 * the original file is modified during the compilation. it is later resoted and taken care of in the script which   compiles all the stuff.

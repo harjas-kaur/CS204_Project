@@ -12,3 +12,7 @@ add x1,x2,x3
 jal x3,label2
 
 exit:
+
+
+
+
