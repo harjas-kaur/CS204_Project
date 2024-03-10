@@ -1,35 +1,26 @@
 #include <stdio.h>
-#include "error.h"
 #include<string.h>
 #include "riscv_compiler.h"
 //test file for error checking
 //for testing gcc -o syntax_checker main.c error.c text.c data.c -std=c99 -Wall -Wextra
 //can run compiled like ./syntax_checker test.asm
 //issues arise when compiling on wsl. reopen the terminal. it will reflect changes.
-void assemble_data_segment(){
-    // Open the RISC-V file
-    FILE *riscv_file = fopen("test.asm", "r");
-    if (riscv_file == NULL) {
-        printf("Error: Unable to open RISC-V file\n");
-        return;
+
+void skip_labels(char *line_copy) {
+    // Find the position of the colon in the line
+    char *colon_pos = strchr(line_copy, ':');
+
+    // If colon is found, skip the label (including the colon)
+    if (colon_pos != NULL) {
+        // Calculate the length to skip
+        size_t label_length = colon_pos - line_copy + 1; // Include the colon
+
+        // Move the pointer after the label
+        memmove(line_copy, colon_pos + 1, strlen(colon_pos));
+
+        // Null terminate the line after the label
+        line_copy[strlen(line_copy) - label_length] = '\0';
     }
-
-    // Create or open the output file
-    FILE *output_file = fopen("output.mc", "w");
-    if (output_file == NULL) {
-        printf("Error: Unable to create/open output file\n");
-        fclose(riscv_file);
-        return ;
-    }
-
-    // Compile the data segment
-    compile_data_segment(riscv_file, output_file);
-
-    // Close the files
-    fclose(riscv_file);
-    fclose(output_file);
-
-    return ;
 }
 
 void assemble_text_segment() {
@@ -52,6 +43,9 @@ void assemble_text_segment() {
 
         printf("Processing line: %s\n", line);
         strcpy(line_copy, line);
+        skip_labels(line_copy);
+        printf("Processing line: %s\n", line_copy);
+
         // Tokenize the line to get the instruction mnemonic
         char *instruction_mnemonic = strtok(line, " \t\n");
         if (instruction_mnemonic == NULL) {
@@ -103,6 +97,7 @@ void assemble_text_segment() {
                     assemble_u_type(line_copy, program_counter_ptr);
                 } else if (strcmp(instr_type, "UJ") == 0) {
                     printf("Assembling UJ-type instruction\n");
+                    assemble_uj_type(line_copy, program_counter_ptr);
                     // Call the function to assemble UJ-type instruction
                 } else {
                     printf("Error: Unknown instruction type '%s'\n", instr_type);
@@ -131,19 +126,10 @@ int main(int argc, char *argv[]) {
     
 
     const char *filename = argv[1];
-    int result = check_errors(filename);
-
     
-    //printf("Result: %d\n", result); // Print the result
-    if(result!=0){
-        printf("Can not assemble! Fix errors!\n");
-        return 0;
-    } else{
-        assemble_data_segment();
+   // assemble_data_segment();
         //printf("Debug 1\n");
         assemble_text_segment();
         //printf("Debug 2\n");
         return 0;
-    }
-    
 }

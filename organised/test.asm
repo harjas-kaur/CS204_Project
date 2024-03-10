@@ -1,2 +1,2 @@
-auipc x3,0
+auipc x0 4
 

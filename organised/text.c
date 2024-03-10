@@ -2,7 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "riscv_compiler.h"
+char* int_to_binary(int value, int num_bits) {
+    static char binary_string[33]; // Assuming a 32-bit integer + null terminator
+    binary_string[num_bits] = '\0'; // Null terminator at the end
 
+    for (int i = num_bits - 1; i >= 0; i--) {
+        binary_string[i] = (value & 1) ? '1' : '0'; // Set the least significant bit of the value
+        value >>= 1; // Shift the value to the right by 1 bit
+    }
+
+    return binary_string;
+}
 char *binary_to_hex(const char *binary) {
     // Convert binary string to integer
     int decimal = strtol(binary, NULL, 2);
@@ -46,9 +56,9 @@ void assemble_r_type(char *line, int *program_counter) {
     printf("Instruction line: %s\n", line);
 
     // Extract rd, rs1, and rs2
-    char *rd = strtok(NULL, ",");
-    char *rs1 = strtok(NULL, ",");
-    char *rs2 = strtok(NULL, ",");
+    char *rd = strtok(NULL, " ");
+    char *rs1 = strtok(NULL, " ");
+    char *rs2 = strtok(NULL, " ");
     
     // Check if any register operand is missing
     if (rd == NULL || rs1 == NULL || rs2 == NULL) {
@@ -102,8 +112,8 @@ void assemble_r_type(char *line, int *program_counter) {
     char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
     sprintf(pc_hex, "0x%02X", *program_counter);
 
-    // Write the assembled instruction to output2.mc
-    FILE *output_file = fopen("output2.mc", "a"); // Open output file in append mode
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
     if (output_file == NULL) {
         printf("Error: Unable to open output file\n");
         return;
@@ -130,9 +140,9 @@ void assemble_i_type(char *line, int *program_counter) {
     printf("Instruction line: %s\n", line);
 
     // Extract rd, rs1, and immediate value
-    char *rd = strtok(NULL, ",");
-    char *rs1 = strtok(NULL, ",");
-    char *immediate_value_str = strtok(NULL, ",");
+    char *rd = strtok(NULL, " ");
+    char *rs1 = strtok(NULL, " ");
+    char *immediate_value_str = strtok(NULL, " ");
 
     // Check if any operand is missing
     if (rd == NULL || rs1 == NULL || immediate_value_str == NULL) {
@@ -189,8 +199,8 @@ void assemble_i_type(char *line, int *program_counter) {
     char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
     sprintf(pc_hex, "0x%02X", *program_counter);
 
-    // Write the assembled instruction to output2.mc
-    FILE *output_file = fopen("output2.mc", "a"); // Open output file in append mode
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
     if (output_file == NULL) {
         printf("Error: Unable to open output file\n");
         return;
@@ -214,7 +224,7 @@ void assemble_s_type(char *line, int *program_counter) {
         return;
     }
 
-    char *rs2 = strtok(NULL, ",");
+    char *rs2 = strtok(NULL, " ");
     char *offset_str = strtok(NULL, "(");
     char *rs1 = strtok(NULL, ")");
     if (rs1[0] == 'x') rs1++;
@@ -278,8 +288,8 @@ void assemble_s_type(char *line, int *program_counter) {
     char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
     sprintf(pc_hex, "0x%02X", *program_counter);
 
-    // Write the assembled instruction to output2.mc
-    FILE *output_file = fopen("output2.mc", "a"); // Open output file in append mode
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
     if (output_file == NULL) {
         printf("Error: Unable to open output file\n");
         return;
@@ -306,7 +316,7 @@ void assemble_u_type(char *line, int *program_counter) {
     printf("Instruction line: %s\n", line);
 
     // Extract rd and immediate value
-    char *rd = strtok(NULL, ",");
+    char *rd = strtok(NULL, " ");
     char *immediate_value_str = strtok(NULL, " ");
 
     // Check if any operand is missing
@@ -320,6 +330,13 @@ void assemble_u_type(char *line, int *program_counter) {
 
     // Convert immediate value string to integer
     int immediate_value = atoi(immediate_value_str);
+
+    // Calculate the immediate value to fit within 20 bits
+    int immediate_bits = immediate_value & 0xFFFFF;
+
+    // Convert immediate value to binary string
+    char immediate_binary[21]; // 20 bits + null terminator
+    sprintf(immediate_binary, "%020b", immediate_bits);
 
     // Open instructions file
     FILE *instructions_file = fopen("instructions.txt", "r");
@@ -345,32 +362,90 @@ void assemble_u_type(char *line, int *program_counter) {
 
     fclose(instructions_file);
 
-    // Convert immediate value to binary
-    char immediate_binary[21]; // 20 bits for immediate, plus null terminator
-    sprintf(immediate_binary, "%020d", immediate_value);
-
-    printf("Immediate binary: %s\n", immediate_binary);
-
-    // Convert rd to binary
+    // Convert rd to binary string
     char *rd_binary = decimal_to_binary(rd);
 
-    printf("rd binary: %s\n", rd_binary);
-
     // Generate machine code
-    char machine_code[33]; // Increased size to accommodate concatenated strings
-    sprintf(machine_code, "%s%s%s%s%s", immediate_binary, funct3, rd_binary, opcode);
-    printf("Machine code: %s\n", machine_code);
+    char machine_code[33]; // 32 bits + null terminator
+    sprintf(machine_code, "%s%s%s", immediate_binary, rd_binary, opcode);
+
+    // Debug: Print binary machine code
+    printf("Binary machine code: %s\n", machine_code);
 
     // Convert binary machine code to hexadecimal
-    char *hex_machine_code = binary_to_hex(machine_code);
-    printf("Hexadecimal machine code: %s\n", hex_machine_code);
+    char hex_machine_code[9]; // 8 hex digits + null terminator
+    sprintf(hex_machine_code, "%08X", (unsigned int) strtol(machine_code, NULL, 2)); // Pad with leading zeros
 
     // Calculate the program counter (assuming each instruction occupies 4 bytes)
     char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
     sprintf(pc_hex, "0x%02X", *program_counter);
 
-    // Write the assembled instruction to output2.mc
-    FILE *output_file = fopen("output2.mc", "a"); // Open output file in append mode
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
+    if (output_file == NULL) {
+        printf("Error: Unable to open output file\n");
+        return;
+    }
+    fprintf(output_file, "%s %s\n", pc_hex, hex_machine_code);
+
+    // Increment the program counter
+    *program_counter += 4;
+
+    // Close the output file
+    fclose(output_file);
+}
+
+
+void assemble_uj_type(char *line, int *program_counter) {
+    // Define the opcode for jal
+    const char opcode[] = "1101111"; // Opcode for jal
+
+    // Extract rd and immediate value
+    char *rd_str = strtok(line, " \t\n");  // Extracting rd
+    char *immediate_value_str = strtok(NULL, " \t\n"); // Extracting immediate value
+
+    // Check if any operand is missing
+    if (rd_str == NULL || immediate_value_str == NULL) {
+        printf("Error: Missing operand\n");
+        return;
+    }
+
+    // Remove 'x' from register operand
+    char *rd = rd_str;
+    if (rd[0] == 'x') rd++;
+
+    // Convert immediate value string to integer
+    int immediate_value = atoi(immediate_value_str);
+
+    // Calculate the offset (20 bits) for the UJ-type instruction
+    int offset = immediate_value - (*program_counter + 4); // Subtract current PC and add 4 for PC+4
+
+    // Check if the immediate value is within the range
+    if (offset < -(1 << 20) || offset >= (1 << 20)) {
+        printf("Error: Immediate value out of range\n");
+        return;
+    }
+
+    // Extract the 20-bit immediate value from the offset
+    int immediate_bits = (offset >> 1) & 0xFFFFF;
+    // Convert immediate value to binary string
+    char* immediate_binary = int_to_binary(immediate_bits, 20);
+    
+    char *rd_binary = decimal_to_binary(rd);
+    // Generate machine code
+    char machine_code[33]; // 32 bits + null terminator
+    sprintf(machine_code, "%s%s%s", immediate_binary,rd_binary, opcode);
+    printf("%s", machine_code);
+    // Convert binary machine code to hexadecimal
+    char hex_machine_code[9]; // 8 hex digits + null terminator
+    sprintf(hex_machine_code, "%X", (int) strtol(machine_code, NULL, 2));
+
+    // Calculate the program counter (assuming each instruction occupies 4 bytes)
+    char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
+    sprintf(pc_hex, "0x%02X", *program_counter);
+
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
     if (output_file == NULL) {
         printf("Error: Unable to open output file\n");
         return;
@@ -383,3 +458,5 @@ void assemble_u_type(char *line, int *program_counter) {
     // Close the output file
     fclose(output_file);
 }
+
+

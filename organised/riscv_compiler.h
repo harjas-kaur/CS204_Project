@@ -14,4 +14,7 @@ void assemble_u_type(char *line, int *program_counter);
 void assemble_r_type(char *line, int *program_counter);
 void assemble_i_type(char *line, int *program_counter);
 void assemble_s_type(char *line, int *program_counter);
+void handle_labels(char *input_file_name);
+void remove_labels(char *input_file_name);
+void replace_labels(char *input_file_name);
 #endif /* RISCV_COMPILER_H */
