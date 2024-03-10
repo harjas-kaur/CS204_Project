@@ -1,10 +1,11 @@
 # CS204_Project
 Risc-v assembler
 built on WSL2 (Ubuntu)
-# note to collaborators
-Add all the documentation for the project here, i.e. how to use etc.
-while making and pushing a commit, always give a comment with what you did.
-note that wsl in vscode terminal gives some glitches occasionally, use normal ubuntu terminal in that case.
+# collaborators
+**Harjas Kaur
+Manas Deorah
+Ragini Gupta**
+
 # note to users
 ---write the use documentation here for evaluation.
 1) instructions.txt contains the list of supported instructions, with their type and number of arguments required.
