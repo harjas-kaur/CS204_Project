@@ -90,6 +90,7 @@ void assemble_text_segment() {
                     assemble_s_type(line_copy, program_counter_ptr);
                 } else if (strcmp(instr_type, "SB") == 0) {
                     printf("Assembling SB-type instruction\n");
+                     assemble_uj_type(line_copy, program_counter_ptr);
                     // Call the function to assemble SB-type instruction
                 } else if (strcmp(instr_type, "U") == 0) {
                     printf("Assembling U-type instruction\n");

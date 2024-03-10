@@ -1,2 +1,2 @@
-auipc x0 4
+beq x0 x0 4
 

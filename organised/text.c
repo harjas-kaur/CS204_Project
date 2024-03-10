@@ -459,4 +459,114 @@ void assemble_uj_type(char *line, int *program_counter) {
     fclose(output_file);
 }
 
+void assemble_sb_type(char *line, int *program_counter) {
+    // Extract instruction mnemonic and operands
+    char line_copy[256];
+    strcpy(line_copy, line);
+    char *instruction_mnemonic = strtok(line_copy, " \t\n");
+    char *rs1_str = strtok(NULL, " \t\n");  // Extracting rs1
+    char *rs2_str = strtok(NULL, " \t\n"); // Extracting rs2
+    char *immediate_value_str = strtok(NULL, " \t\n"); // Extracting immediate value
 
+    // Check if any operand is missing
+    if (instruction_mnemonic == NULL || rs1_str == NULL || rs2_str == NULL || immediate_value_str == NULL) {
+        printf("Error: Missing operand\n");
+        return;
+    }
+
+    // Remove 'x' from register operands
+    char *rs1 = rs1_str;
+    char *rs2 = rs2_str;
+    if (rs1[0] == 'x') rs1++;
+    if (rs2[0] == 'x') rs2++;
+
+    // Convert immediate value string to integer
+    int immediate_value = atoi(immediate_value_str);
+
+    // Calculate the offset (12 bits) for the SB-type instruction
+    int offset = immediate_value - (*program_counter + 4); // Subtract current PC and add 4 for PC+4
+
+    // Check if the immediate value is within the range
+    if (offset < -(1 << 11) || offset >= (1 << 11)) {
+        printf("Error: Immediate value out of range\n");
+        return;
+    }
+
+    // Extract the 12-bit immediate value from the offset
+    int immediate_bits = (offset >> 1) & 0xFFF;
+
+    // Extract bits 1-4 and 11 to store in rd
+    int rd_bits = ((offset >> 11) & 0x1) | ((offset >> 4) & 0xF);
+
+    printf("Immediate bits: %d\n", immediate_bits);
+    printf("RD bits: %d\n", rd_bits);
+
+    // Open instructions file
+    FILE *instructions_file = fopen("instructions.txt", "r");
+    if (instructions_file == NULL) {
+        printf("Error: Unable to open instructions file\n");
+        return;
+    }
+
+    char instr_line[MAX_LINE_LENGTH];
+    char opcode[MAX_LINE_LENGTH], funct3[MAX_LINE_LENGTH];
+
+    // Find the corresponding opcode and funct3 for the instruction mnemonic
+    while (fgets(instr_line, sizeof(instr_line), instructions_file) != NULL) {
+        char instr_mnemonic[MAX_LINE_LENGTH];
+        if (sscanf(instr_line, "%*s %s %*s %s %s", instr_mnemonic, opcode, funct3) != 3) {
+            continue;
+        }
+        if (strcmp(instr_mnemonic, instruction_mnemonic) == 0) {
+            break;
+        }
+    }
+
+    fclose(instructions_file);
+
+    // Convert immediate value to binary string
+    char immediate_binary[13]; // 12 bits + null terminator
+    sprintf(immediate_binary, "%012d", immediate_bits);
+
+    // Convert rd to binary string
+    char rd_binary[5]; // 4 bits + null terminator
+    sprintf(rd_binary, "%04d", rd_bits);
+
+    // Convert operands to binary strings
+    char *rs2_binary = decimal_to_binary(rs2);
+    char *rs1_binary = decimal_to_binary(rs1);
+
+    // Generate machine code
+    char machine_code[33]; // 32 bits + null terminator
+    sprintf(machine_code, "%s%s%s%s%s", immediate_binary, rs2_binary, rs1_binary, opcode, funct3);
+
+    // Insert rd bits into machine code at appropriate position
+    machine_code[7] = rd_binary[0];
+    machine_code[8] = rd_binary[1];
+    machine_code[9] = rd_binary[2];
+    machine_code[10] = rd_binary[3];
+
+    printf("Machine code (binary): %s\n", machine_code);
+
+    // Convert binary machine code to hexadecimal
+    char hex_machine_code[9]; // 8 hex digits + null terminator
+    sprintf(hex_machine_code, "%X", (int) strtol(machine_code, NULL, 2));
+
+    // Calculate the program counter (assuming each instruction occupies 4 bytes)
+    char pc_hex[9]; // 32 bits / 4 bits per hex digit = 8 digits + null terminator
+    sprintf(pc_hex, "0x%02X", *program_counter);
+
+    // Write the assembled instruction to output.mc
+    FILE *output_file = fopen("output.mc", "a"); // Open output file in append mode
+    if (output_file == NULL) {
+        printf("Error: Unable to open output file\n");
+        return;
+    }
+    fprintf(output_file, "%s 0x%s\n", pc_hex, hex_machine_code);
+
+    // Increment the program counter
+    *program_counter += 4;
+
+    // Close the output file
+    fclose(output_file);
+}
