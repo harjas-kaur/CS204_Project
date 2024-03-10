@@ -2,12 +2,12 @@
 Risc-v assembler
 built on WSL2 (Ubuntu)
 # collaborators
-**Harjas Kaur**
-**Manas Deorah**
-**Ragini Gupta**
+* **Harjas Kaur**
+* **Manas Deorah**
+* **Ragini Gupta**
 
 # note to users
----write the use documentation here for evaluation.
+
 1) instructions.txt contains the list of supported instructions, with their type and number of arguments required.
 2) test.asm is a test file used to check the working of the codes
 3) To run the program:
