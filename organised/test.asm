@@ -1,9 +1,9 @@
 .data
 job: .half 1,2,3,4
-place: .asciz "shimla"
+place: .asciiz "shimla"
 people: .dword 100
 place .byte 4,3,2,1
-name: .asciz "harjas
+name: .asciiz "harjas
 .text
 add x1,x2,x3
 label1: add x1,x2,x3
