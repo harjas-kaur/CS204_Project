@@ -82,7 +82,7 @@ void assemble_r_type(char *line, int *program_counter) {
             continue;
         }
         if (strcmp(instr_keyword, instruction_keyword) == 0) {
-            printf("Read: %s %s %s %s\n", instr_keyword, opcode, funct3, funct7);
+            //printf("Read: %s %s %s %s\n", instr_keyword, opcode, funct3, funct7);
             break;
         }
     }
@@ -96,10 +96,10 @@ void assemble_r_type(char *line, int *program_counter) {
     
     char machine_code[33]; 
     sprintf(machine_code, "%s%s%s%s%s%s", funct7, rs2_binary, rs1_binary, funct3, rd_binary, opcode);
-    printf("Machine code: %s\n", machine_code);
+    //printf("Machine code: %s\n", machine_code);
     // binary code to hex
     char *hex_machine_code = binary_to_hex(machine_code);
-    printf("Hexadecimal machine code: %s\n", hex_machine_code);
+    //printf("Hexadecimal machine code: %s\n", hex_machine_code);
 
     //program counter
     char pc_hex[9]; 
@@ -130,7 +130,7 @@ void assemble_i_type(char *line, int *program_counter) {
     }
 
     // print line to check its content
-    printf("Instruction line: %s\n", line);
+    //printf("Instruction line: %s\n", line);
 
     // extract rd, rs1, immediate value
     char *rd = strtok(NULL, " ");
@@ -167,7 +167,7 @@ void assemble_i_type(char *line, int *program_counter) {
             continue;
         }
         if (strcmp(instr_keyword, instruction_keyword) == 0) {
-            printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
+           // printf("Read: %s %s %s\n", instr_keyword, opcode, funct3);
             break;
         }
     }
@@ -182,11 +182,11 @@ void assemble_i_type(char *line, int *program_counter) {
     
     char machine_code[33];
     sprintf(machine_code, "%s%s%s%s%s", immediate_binary, rs1_binary, funct3, rd_binary, opcode);
-    printf("Machine code: %s\n", machine_code);
+    //printf("Machine code: %s\n", machine_code);
 
     
     char *hex_machine_code = binary_to_hex(machine_code);
-    printf("Hexadecimal machine code: %s\n", hex_machine_code);
+   // printf("Hexadecimal machine code: %s\n", hex_machine_code);
 
     
     char pc_hex[9];
@@ -228,7 +228,7 @@ void assemble_s_type(char *line, int *program_counter) {
         return;
     }
 
-    printf("Instruction: %s, rs2: %s, offset: %s, rs1: %s\n", instruction_keyword, rs2, offset_str, rs1);
+    //printf("Instruction: %s, rs2: %s, offset: %s, rs1: %s\n", instruction_keyword, rs2, offset_str, rs1);
 
     // convert immediate -decimal-binary
     int offset_value = atoi(offset_str);
@@ -237,12 +237,12 @@ void assemble_s_type(char *line, int *program_counter) {
         return;
     }
     char *offset_binary = decimal_to_binary(offset_str);
-    printf("Offset binary: %s\n", offset_binary);
+    //printf("Offset binary: %s\n", offset_binary);
 
     
     char *rs1_binary = decimal_to_binary(rs1);
     char *rs2_binary = decimal_to_binary(rs2);
-    printf("rs1 binary: %s, rs2 binary: %s\n", rs1_binary, rs2_binary);
+    //printf("rs1 binary: %s, rs2 binary: %s\n", rs1_binary, rs2_binary);
 
     
     FILE *instructions_FILE = fopen("instructions.txt", "r");
@@ -271,11 +271,11 @@ void assemble_s_type(char *line, int *program_counter) {
     
     char machine_code[33]; 
     sprintf(machine_code, "%s%s%s%s%s", rs2_binary, rs1_binary, funct3, offset_binary, opcode);
-    printf("Machine code: %s\n", machine_code);
+    //printf("Machine code: %s\n", machine_code);
 
     
     char *hex_machine_code = binary_to_hex(machine_code);
-    printf("Hexadecimal machine code: %s\n", hex_machine_code);
+    //printf("Hexadecimal machine code: %s\n", hex_machine_code);
 
     
     char pc_hex[9];
@@ -306,7 +306,7 @@ void assemble_u_type(char *line, int *program_counter) {
     }
 
     // print line to check its content
-    printf("Instruction line: %s\n", line);
+    //printf("Instruction line: %s\n", line);
 
     // extract rd immediate value
     char *rd = strtok(NULL, " ");
@@ -427,7 +427,7 @@ void assemble_uj_type(char *line, int *program_counter) {
     
     char machine_code[33]; 
     sprintf(machine_code, "%s%s%s", immediate_binary,rd_binary, opcode);
-    printf("%s", machine_code);
+    //printf("%s", machine_code);
     
     char hex_machine_code[9]; 
     sprintf(hex_machine_code, "%X", (int) strtol(machine_code, NULL, 2));
@@ -489,8 +489,8 @@ void assemble_sb_type(char *line, int *program_counter) {
     // extract bits 1-4 11 store in rd
     int rd_bits = ((offset >> 11) & 0x1) | ((offset >> 4) & 0xF);
 
-    printf("Immediate bits: %d\n", immediate_bits);
-    printf("RD bits: %d\n", rd_bits);
+   // printf("Immediate bits: %d\n", immediate_bits);
+    //printf("RD bits: %d\n", rd_bits);
 
     
     FILE *instructions_FILE = fopen("instructions.txt", "r");

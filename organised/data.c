@@ -82,7 +82,9 @@ void compile_data_segment(FILE *input_file, FILE *output_file) {
                 fclose(directives_file);
 
                 // Check if it's an array declaration
-                if (strcmp(directive_name, "word") == 0 || strcmp(directive_name, "dword") == 0) {
+                if (strcmp(directive_name, "word") == 0 || strcmp(directive_name, "dword") == 0 ||
+                    strcmp(directive_name, "byte") == 0 || strcmp(directive_name, "half") == 0 ||
+                    strcmp(directive_name, "asciz") == 0) {
                     // Extract the values of the array
                     char *values_start = strchr(line, '.');
                     if (values_start != NULL) {
@@ -92,10 +94,14 @@ void compile_data_segment(FILE *input_file, FILE *output_file) {
                         // Parse and print each value
                         while (token != NULL) {
                             // Convert token to integer
-                            unsigned int data_value = (unsigned int)strtol(token, NULL, 0);
-
-                            // Print the address and data in hexadecimal format
-                            fprintf(output_file, "0x%08X    0x%08X\n", address, data_value);
+                            unsigned int data_value = 0;
+                            if (strcmp(directive_name, "asciz") == 0) {
+                                handle_ascii_string(token, &address, output_file);
+                            } else {
+                                data_value = (unsigned int)strtol(token, NULL, 0);
+                                // Print the address and data in hexadecimal format
+                                fprintf(output_file, "0x%08X    0x%08X\n", address, data_value);
+                            }
 
                             // Update address based on the data type
                             address += offset;

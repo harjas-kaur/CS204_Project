@@ -267,6 +267,7 @@ int main() {
 
     // Close the files
     fclose(input_file);
+    fprintf(output_file, "<end of data segment...>\n");
     fclose(output_file);
 
     // Handle labels
