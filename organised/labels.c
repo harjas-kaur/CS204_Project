@@ -274,10 +274,10 @@ int main() {
     handle_labels(filename);
 
     // Print the label table for debugging
-    printf("Label Table:\n");
+    /*printf("Label Table:\n");
     for (int i = 0; i < labelCount; i++) {
         printf("Label: %s, Address: %d\n", labelTable[i].label, labelTable[i].address);
-    }
+    }*/
 
     // Remove and replace labels
     remove_labels(filename);

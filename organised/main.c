@@ -7,18 +7,14 @@
 //issues arise when compiling on wsl. reopen the terminal. it will reflect changes.
 //beq and jal do not give out correct machine code compared to venus.
 void skip_labels(char *line_copy) {
-    // find the position of the colon in the line
+    
     char *colon_pos = strchr(line_copy, ':');
 
-    // if colon found skip label 
+    // colon found then skip label 
     if (colon_pos != NULL) {
-        // calculate the length to skip
+        
         size_t label_length = colon_pos - line_copy + 1; // +1 to include the colon
-
-        // move the pointer after the label
         memmove(line_copy, colon_pos + 1, strlen(colon_pos));
-
-        // null terminate the line after the label
         line_copy[strlen(line_copy) - label_length] = '\0';
     }
 }
@@ -36,8 +32,7 @@ void assemble_text_segment() {
     char line_copy[MAX_LINE_LENGTH];
     // iterate through each line in the input file
     while (fgets(line, MAX_LINE_LENGTH, input_file) != NULL) {
-        // skip empty lines and comments
-        if (strlen(line) <= 1 || line[0] == '#' || line[0] == '\n') {
+            if (strlen(line) <= 1 || line[0] == '#' || line[0] == '\n') {
             continue;
         }
 

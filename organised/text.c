@@ -423,21 +423,21 @@ void assemble_uj_type(char *line, int *program_counter) {
         return;
     }
 
-    // Extract the bits and rearrange them
-    int bit_20 = (offset >> 20) & 0x1; // Bit 20
-    int bits_10_to_1 = (offset >> 1) & 0x3FF; // Bits 10 to 1
-    int bit_11 = (offset >> 11) & 0x1; // Bit 11
-    int bits_19_to_12 = (offset >> 12) & 0xFF; // Bits 19 to 12
-    char immediate_binary[21]; // Assuming 21 bits + null terminator
+    // extract the bits and rearrange them
+    int bit_20 = (offset >> 20) & 0x1; // bit 20
+    int bits_10_to_1 = (offset >> 1) & 0x3FF; // bits 10 to 1
+    int bit_11 = (offset >> 11) & 0x1; // bit 11
+    int bits_19_to_12 = (offset >> 12) & 0xFF; // bits 19 to 12
+    char immediate_binary[21]; 
     snprintf(immediate_binary, 21, "%b%010b%b%08b", bit_20, bits_10_to_1, bit_11, bits_19_to_12);
-    printf("%s\n", immediate_binary);
+    //printf("%s\n", immediate_binary);
     //printf("%s\n", rd);
     
     char *rd_binary = decimal_to_binary(rd);
-    printf("%s\n", rd_binary);
+    //printf("%s\n", rd_binary);
     char machine_code[33]; 
     sprintf(machine_code, "%s%s%s", immediate_binary,rd_binary, opcode);
-    printf("%s\n", machine_code);
+    //printf("%s\n", machine_code);
     
     char hex_machine_code[9]; 
     sprintf(hex_machine_code, "%X", (int) strtol(machine_code, NULL, 2));
@@ -493,10 +493,10 @@ void assemble_sb_type(char *line, int *program_counter) {
         return;
     }
     
-    // Extract 7-bit immediate value from offset
+    // 7-bit immediate value from offset
     int immediate_bits = ((offset >> 12) & 0x1) | ((offset >> 5) & 0x7E);
 
-    // extract bits 4-1 and bit 11, and store in rd
+    // 4-1 and bit 11, store in rd
     int rd_bits = ((offset >> 11) & 0x1) | (((offset >> 1) & 0xF) << 1);
 
    // printf("Immediate bits: %d\n", immediate_bits);

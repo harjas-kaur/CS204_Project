@@ -117,32 +117,30 @@ int check_directives(FILE *file) {
         char *label_end = strchr(line, ':');
         char *directive_start = strchr(line, '.');
 
-        // Skip lines containing an integer separated by a tab
+        
         char *tab_position = strchr(line, '\t');
         if (tab_position != NULL && tab_position > directive_start) {
             continue;
         }
 
         if (label_end != NULL && directive_start != NULL && directive_start > label_end) {
-            // Extract the directive name
+            // extract the directive name
             char directive_name[MAX_LINE_LENGTH];
             sscanf(directive_start, ".%s", directive_name);
 
-            // Open the directives file for comparison
+            
             FILE *directives_file = fopen("directives.txt", "r");
             if (directives_file == NULL) {
                 printf("Error: Unable to open directives file\n");
                 return 1;
             }
 
-            // check if the directive exists in directives.txt
+            // check if directive exists 
             char current_directive[MAX_LINE_LENGTH];
             int found = 0;
             while (fgets(current_directive, MAX_LINE_LENGTH, directives_file) != NULL) {
-                // Remove newline character
+                
                 current_directive[strcspn(current_directive, "\n")] = 0;
-
-                // Extract directive name from the line in directives.txt
                 char current_directive_name[MAX_LINE_LENGTH];
                 sscanf(current_directive, "%s", current_directive_name);
 
@@ -172,9 +170,9 @@ int check_directives(FILE *file) {
     }
 
     int syntax_result = check_syntax(file);
-    fclose(file); // Close the file before reopening
+    fclose(file); 
 
-    file = fopen(filename, "r"); // Reopen the file
+    file = fopen(filename, "r"); 
     if (file == NULL) {
         printf("Error: Unable to reopen file %s\n", filename);
         return 1;
