@@ -45,6 +45,6 @@ note that wsl in vscode terminal gives some glitches occasionally, use normal ub
     after making all the changes in the clone of desktop run *bash git_push.sh*
 # shortcomings
 * syntax checking can be improved.
-* the original file is modified during the compilation.
+* the original file is modified during the compilation. it is later resoted and taken care of in the script which   compiles all the stuff.
 * bulky code.
     
