@@ -4,8 +4,8 @@
 #include <string.h>
 
 #define MAX_LINE_LENGTH 100
-#define MAX_INSTRUCTIONS 1000
-#define MAX_QUEUE_SIZE 10
+#define MAX_INSTRUCTIONS 100000
+#define MAX_QUEUE_SIZE 1000
 typedef struct {
     int data[MAX_QUEUE_SIZE];
     int front; // Index of the front element
@@ -19,8 +19,8 @@ void enqueue(Queue *queue, int value);
 int dequeue(Queue *queue);
 
 typedef struct {
-    char instruction[MAX_LINE_LENGTH]; 
-    char pc[10];
+    char *instruction; 
+    char *pc;
     int branch;
     int offset;
     //int tag;
@@ -56,53 +56,56 @@ int parsetracefile(const char *filename, Instruction *instructions) {
     int count = 0;
 
     while (fgets(line, sizeof(line), file)) {
-       
         line[strcspn(line, "\n")] = 0;
 
         char *token = strtok(line, " ");
         token = strtok(NULL, " ");
         token = strtok(NULL, " ");
-        strcpy(instructions[count].pc, token);
-
-        token = strtok(NULL, " ");
-        token = strtok(NULL, " ");
-        strcpy(instructions[count].instruction, token);
-        //printf("%s\n", instructions[count].pc);
         
-        if (strcmp(instructions[count].instruction, "beq") ==0  || strcmp(instructions[count].instruction, "bne") == 0) {
-            //instructions[count].branch = true;
-            //printf("%s\n", token);
-            token = strtok(NULL, " ");
-            token = strtok(NULL, " ");
-            token = strtok(NULL, " ");
-            token = strtok(NULL, " ");
-            //printf("%s\n", token);
-            if(strcmp(token,"-")==0){
-                token = strtok(NULL, " ");
-                //printf("%s\n", token);
-                instructions[count].offset = -atoi(token);
-                //printf("%d\n", instructions[count].offset);
-            }else{
-                token = strtok(NULL, " ");
-                instructions[count].offset = atoi(token);
-                printf("%d\n", instructions[count].offset);
-            }
-            
+        // Allocate memory and copy the content of token to instructions[count].pc
+        instructions[count].pc = strdup(token);
+        if (instructions[count].pc == NULL) {
+            printf("Error: Memory allocation failed\n");
+            fclose(file);
+            return -1;
+        }
 
-        } else if(strcmp(instructions[count].instruction, "beqz") ==0  || strcmp(instructions[count].instruction, "bnez") == 0){
-            //instructions[count].branch = true;
+        token = strtok(NULL, " ");
+        token = strtok(NULL, " ");
+        
+        // Allocate memory and copy the content of token to instructions[count].instruction
+        instructions[count].instruction = strdup(token);
+        if (instructions[count].instruction == NULL) {
+            printf("Error: Memory allocation failed\n");
+            fclose(file);
+            free(instructions[count].pc); // Free allocated memory for pc
+            return -1;
+        }
+        
+        if (strcmp(instructions[count].instruction, "beq") == 0 || strcmp(instructions[count].instruction, "bne") == 0) {
             token = strtok(NULL, " ");
             token = strtok(NULL, " ");
             token = strtok(NULL, " ");
-            if(strcmp(token,"-")==0){
+            token = strtok(NULL, " ");
+            if (strcmp(token, "-") == 0) {
                 token = strtok(NULL, " ");
-                instructions[count].offset = -(atoi(token));
-            }else{
+                instructions[count].offset = -atoi(token);
+            } else {
                 token = strtok(NULL, " ");
                 instructions[count].offset = atoi(token);
             }
-            
-        }else {
+        } else if (strcmp(instructions[count].instruction, "beqz") == 0 || strcmp(instructions[count].instruction, "bnez") == 0) {
+            token = strtok(NULL, " ");
+            token = strtok(NULL, " ");
+            token = strtok(NULL, " ");
+            if (strcmp(token, "-") == 0) {
+                token = strtok(NULL, " ");
+                instructions[count].offset = -atoi(token);
+            } else {
+                token = strtok(NULL, " ");
+                instructions[count].offset = atoi(token);
+            }
+        } else {
             instructions[count].branch = -1;
             instructions[count].offset = 0;
         }
@@ -113,6 +116,7 @@ int parsetracefile(const char *filename, Instruction *instructions) {
     fclose(file);
     return count;
 }
+
 
 // Function to simulate the execution of the program
 void simulateExecution(Instruction *instructions, int count) {
@@ -425,7 +429,7 @@ int main() {
     printBranchHistory(branches, numBranches);
     always_not_taken(branches, numBranches);
     always_taken(branches, numBranches);
-    two_bit_branch_predictor(branches, numBranches);
+    one_bit_branch_predictor(branches, numBranches);
     return 0;
 }
 
@@ -468,18 +472,6 @@ int isFull(Queue *queue) {
     return ((queue->rear + 1) % MAX_QUEUE_SIZE == queue->front);
 }
 // Function to enqueue an element into the queue
-void enqueue(Queue *queue, int value) {
-    if (isFull(queue)) {
-        printf("Queue is full. Cannot enqueue.\n");
-        return;
-    }
-    if (isEmpty(queue)) {
-        queue->front = 0; // If the queue is empty, set front to 0
-    }
-    queue->rear = (queue->rear + 1) % MAX_QUEUE_SIZE; // Increment rear circularly
-    queue->data[queue->rear] = value; // Enqueue the value
-}
-// Function to dequeue an element from the queue
 int dequeue(Queue *queue) {
     int value;
     if (isEmpty(queue)) {
@@ -496,3 +488,17 @@ int dequeue(Queue *queue) {
     }
     return value;
 }
+
+void enqueue(Queue *queue, int value) {
+    if (isFull(queue)) {
+        printf("Queue is full. Cannot enqueue.\n");
+        return;
+    }
+    if (isEmpty(queue)) {
+        queue->front = 0; // If the queue is empty, set front to 0
+    }
+    queue->rear = (queue->rear + 1) % MAX_QUEUE_SIZE; // Increment rear circularly
+    queue->data[queue->rear] = value; // Enqueue the value
+}
+// Function to dequeue an element from the queue
+

@@ -1,0 +1,8 @@
+core   0: 0x80004c40 (0x00810793) addi    a5, sp, 8
+core   0: 0x80004c44 (0x02112e23) sw      ra, 60(sp)
+core   0: 0x80004c48 (0x02012423) sw      zero, 40(sp)
+core   0: 0x80004c4c (0x02f12623) sw      a5, 44(sp)
+core   0: 0x80004c50 (0x5d1010ef) jal     pc + 0x1dd0
+core   0: 0x80006a20 (0x00052703) lw      a4, 0(a0)
+core   0: 0x80006a24 (0x00ff0637) lui     a2, 0xff0
+core   0: 0x80006a28 (0xff010837) lui     a6, 0xff010
