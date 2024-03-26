@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINE_LENGTH 100
 #define MAX_INSTRUCTIONS 1000
 
 // Structure to hold instruction details
 typedef struct {
-    char instruction[MAX_LINE_LENGTH]; // PC is a hex value, so it can be stored in a string of length 8 + 1 for null terminator
+    char instruction[MAX_LINE_LENGTH]; 
+    // PC is a hex value, so it can be stored in a string of length 8 + 1 for null terminator
     char pc[9];
     bool branch;
     int offset;
@@ -87,7 +89,7 @@ void simulateExecution(const Instruction *instructions, int count) {
         if (strcmp(instructions[i].instruction,"beq")==0||strcmp(instructions[i].instruction,"bne")==0) {
             int pc_old=hexToDecimal(instructions[i-1].pc);
             int pc_new=hexToDecimal(instructions[i].pc);
-            printf("%d,%d", pc_old, pc_new);
+            printf(" %d,%d ", pc_old, pc_new);
             if ( pc_old +4==pc_new){
                 printf("branch not taken\n");
             } else /*if (pc_old +instructions[i].offset==pc_new)*/{ 
