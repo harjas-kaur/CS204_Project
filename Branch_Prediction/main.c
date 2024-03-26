@@ -136,8 +136,8 @@ void static_predictor(Instruction *instructions, int count, int alwaysTaken) {
         
         // Check if it's a branch instruction.
         if (strcmp(instructions[i].instruction,"beq")==0||strcmp(instructions[i].instruction,"bne")==0) {
-            int pc_old=hexToDecimal(instructions[i-1].pc);
-            int pc_new=hexToDecimal(instructions[i].pc);
+            int pc_old=hextodecimal(instructions[i-1].pc);
+            int pc_new=hextodecimal(instructions[i].pc);
             printf(" %d,%d ", pc_old, pc_new);
             if ( pc_old +4==pc_new){
                 printf("branch not taken\n");
@@ -218,7 +218,6 @@ int storeBranches(Instruction *instructions, int count, Branches *branches) {
     }
     return new_count;
 }
-    }
 
 void printBranchHistory(Branches *branches, int numBranches);
 
@@ -420,6 +419,7 @@ void enqueue(Queue *queue, int value) {
         queue->front = 0; // If the queue is empty, set front to 0
     }
     queue->rear = (queue->rear + 1) % MAX_QUEUE_SIZE; // Increment rear circularly
-    queue->data[queue->rear] = value; // Enqueue the new value
+    queue->data[queue->rear] = value;   // Enqueue the new value
 }
+
 
