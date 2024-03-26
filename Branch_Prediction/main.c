@@ -7,6 +7,7 @@
 #define MAX_LINE_LENGTH 100
 #define MAX_INSTRUCTIONS 100000
 #define MAX_QUEUE_SIZE 2
+
 typedef struct {
     char instruction[MAX_LINE_LENGTH]; 
     // PC is a hex value, so it can be stored in a string of length 8 + 1 for null terminator
@@ -47,7 +48,7 @@ unsigned int hextodecimal(char *hexstring) {
 
     return (unsigned int)decimal;
 }
-// function to parse the trace file
+// function to parse the trace file.
 
 int parsetracefile(const char *filename, Instruction *instructions) {
     FILE *file = fopen(filename, "r");
@@ -122,7 +123,7 @@ int parsetracefile(const char *filename, Instruction *instructions) {
 }
 
 
-// Function to simulate the execution of the program
+// Function to simulate the execution of the program.
 void static_predictor(Instruction *instructions, int count, int alwaysTaken) {
     int totalBranches = 0;
     int correctPredictions = 0;
@@ -133,7 +134,7 @@ void static_predictor(Instruction *instructions, int count, int alwaysTaken) {
     for (int i = 0; i < count; i++) {
         printf("%s %s", instructions[i].instruction, instructions[i].pc);
         
-        // Check if it's a branch instruction
+        // Check if it's a branch instruction.
         if (strcmp(instructions[i].instruction,"beq")==0||strcmp(instructions[i].instruction,"bne")==0) {
             int pc_old=hexToDecimal(instructions[i-1].pc);
             int pc_new=hexToDecimal(instructions[i].pc);
@@ -328,7 +329,7 @@ void two_bit_branch_predictor(Branches *branches, int numBranches) {
         }
     }
 
-    // Calculate accuracy of the two-bit branch predictor
+    // Calculate accuracy of the two-bit branch predictor.
     float accuracy = (float)correctPredictions / totalBranches * 100;
 
     printf("\nAccuracy of Two-bit Branch Predictor: %.2f%%\n", accuracy);
