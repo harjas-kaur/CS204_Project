@@ -1,10 +1,6 @@
 # CS204_Project
 Risc-v assembler
 built on WSL2 (Ubuntu)
-# collaborators
-* **Harjas Kaur**
-* **Manas Deorah**
-* **Ragini Gupta**
 
 # note to users
 
