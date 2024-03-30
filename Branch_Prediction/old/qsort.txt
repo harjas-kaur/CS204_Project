@@ -11306,4 +11306,21 @@ core   0: 0x80004e14 (0x201070ef) jal     pc + 0x7a00
 core   0: 0x8000c814 (0x00054783) lbu     a5, 0(a0)
 core   0: 0x8000c818 (0x00158593) addi    a1, a1, 1
 core   0: 0x8000c81c (0x00150513) addi    a0, a0, 1
-core   0: 0x8000c820 (0xfff5c703) lbu     a4
+core   0: 0x8000c820 (0xfff5c703) lbu     a4, -1(a1)
+core   0: 0x8000c824 (0x00078863) beqz    a5, pc + 16
+core   0: 0x8000c828 (0xfee786e3) beq     a5, a4, pc - 20
+core   0: 0x8000c814 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x8000c818 (0x00158593) addi    a1, a1, 1
+core   0: 0x8000c81c (0x00150513) addi    a0, a0, 1
+core   0: 0x8000c820 (0xfff5c703) lbu     a4, -1(a1)
+core   0: 0x8000c824 (0x00078863) beqz    a5, pc + 16
+core   0: 0x8000c828 (0xfee786e3) beq     a5, a4, pc - 20
+core   0: 0x8000c82c (0x40e78533) sub     a0, a5, a4
+core   0: 0x8000c830 (0x00008067) ret
+core   0: 0x80004e18 (0x06051263) bnez    a0, pc + 100
+core   0: 0x80004e7c (0x00c12083) lw      ra, 12(sp)
+core   0: 0x80004e80 (0x00812403) lw      s0, 8(sp)
+core   0: 0x80004e84 (0x00412483) lw      s1, 4(sp)
+core   0: 0x80004e88 (0x00012903) lw      s2, 0(sp)
+core   0: 0x80004e8c (0x01010113) addi    sp, sp, 16
+core   0: 0x80004e90 (0x00008067) ret

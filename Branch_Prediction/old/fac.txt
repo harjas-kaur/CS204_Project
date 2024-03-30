@@ -11298,12 +11298,3 @@ core   0: 0x8000c824 (0x00078863) beqz    a5, pc + 16
 core   0: 0x8000c828 (0xfee786e3) beq     a5, a4, pc - 20
 core   0: 0x8000c82c (0x40e78533) sub     a0, a5, a4
 core   0: 0x8000c830 (0x00008067) ret
-core   0: 0x80004e04 (0x08050863) beqz    a0, pc + 144
-core   0: 0x80004e08 (0x0000a597) auipc   a1, 0xa
-core   0: 0x80004e0c (0x05058593) addi    a1, a1, 80
-core   0: 0x80004e10 (0x00048513) mv      a0, s1
-core   0: 0x80004e14 (0x201070ef) jal     pc + 0x7a00
-core   0: 0x8000c814 (0x00054783) lbu     a5, 0(a0)
-core   0: 0x8000c818 (0x00158593) addi    a1, a1, 1
-core   0: 0x8000c81c (0x00150513) addi    a0, a0, 1
-core   0: 0x8000c820 (0xfff5c703) lbu     a4
