@@ -1,7 +1,7 @@
 # CS204_Project
 Risc-v assembler
 built on WSL2 (Ubuntu)
-
+# INSTRUCTIONS FOR ASSEMBLER
 # note to users
 
 1) instructions.txt contains the list of supported instructions, with their type and number of arguments required.
@@ -43,4 +43,5 @@ built on WSL2 (Ubuntu)
 * syntax checking can be improved.
 * the original file is modified during the compilation. it is later resoted and taken care of in the script which   compiles all the stuff.
 * bulky code.
-    
+# INSTRUCTIONS FOR BRANCH PREDICTOR
+the final branch predictor code is in the folder "old". Compile main.c with the assembler trace in trace.txt. Due to array use it can work on a maximum of around 20,000 lines. By using compiler flags it can be extended upto 80,000. Better Algorithms can be used.
