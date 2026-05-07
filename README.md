@@ -196,5 +196,20 @@ Metrics include:
 * Hardware verification using waveform simulation
 
 ---
+---
+
+# Credits
+
+The base 5-stage pipelined RISC-V processor framework was adapted from the MERL-DSU educational processor design repository. Significant extensions and modifications were implemented, including:
+
+- BTB-based dynamic branch prediction
+- 2-bit saturating counter predictor
+- Speculative fetch logic
+- Branch misprediction recovery and pipeline flushing
+- GTKWave-based verification infrastructure
+- Additional branch prediction analysis and tooling
+
+Original educational framework copyright:
+MERL-DSU (Apache License 2.0)
 
 
