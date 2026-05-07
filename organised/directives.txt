@@ -1,0 +1,7 @@
+text    0
+data    0
+byte    1
+half    2
+word    4
+dword   8
+asciiz   1
