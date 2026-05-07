@@ -22,6 +22,36 @@ CS204_Project/
 └── README.md
 ````
 
+# RISC-V Assembler
+
+This repository also includes a simple RISC-V assembler capable of:
+
+* Parsing assembly instructions
+* Generating machine code
+* Producing hexadecimal memory initialization files
+
+Used for generating test programs for the processor pipeline and branch predictor verification.
+
+---
+
+# Branch Prediction Accuracy Analysis
+
+The `Branch_Prediction/` directory contains experiments analyzing branch predictor accuracy using execution traces.
+
+Implemented and evaluated:
+
+* Static prediction
+* 1-bit predictors
+* 2-bit saturating predictors
+
+Metrics include:
+
+* Prediction accuracy
+* Misprediction rate
+* Trace-driven behavior analysis
+
+---
+
 ---
 
 # 5-Stage Pipelined RISC-V Processor
@@ -143,36 +173,6 @@ vvp pipeline_out
 ```bash
 gtkwave pipeline.vcd
 ```
-
----
-
-# RISC-V Assembler
-
-This repository also includes a simple RISC-V assembler capable of:
-
-* Parsing assembly instructions
-* Generating machine code
-* Producing hexadecimal memory initialization files
-
-Used for generating test programs for the processor pipeline and branch predictor verification.
-
----
-
-# Branch Prediction Accuracy Analysis
-
-The `Branch_Prediction/` directory contains experiments analyzing branch predictor accuracy using execution traces.
-
-Implemented and evaluated:
-
-* Static prediction
-* 1-bit predictors
-* 2-bit saturating predictors
-
-Metrics include:
-
-* Prediction accuracy
-* Misprediction rate
-* Trace-driven behavior analysis
 
 ---
 
